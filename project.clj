@@ -9,4 +9,6 @@
                  [ring/ring-jetty-adapter "1.6.3"]]
   :main slink.core
   :min-lein-version "2.0.0"
+  :uberjar-name "slink.jar"
+  :profiles {:uberjar {:aot :all}}
   :repl-options {:init-ns slink.core})
