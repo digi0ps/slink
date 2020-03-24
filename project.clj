@@ -8,4 +8,5 @@
                  [ring/ring-core "1.6.3"]
                  [ring/ring-jetty-adapter "1.6.3"]]
   :main slink.core
+  :min-lein-version "2.0.0"
   :repl-options {:init-ns slink.core})
