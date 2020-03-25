@@ -3,4 +3,4 @@
 (defn hello-handler [request]
   {:status 200
    :headers {"Content-Type" "text/plain"}
-   :body "hello from clojure"})
+   :body "server is running..."})
