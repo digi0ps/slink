@@ -2,5 +2,4 @@
 
 (defn hello-handler [request]
   {:status 200
-   :headers {"Content-Type" "text/plain"}
-   :body "server is running..."})
+   :body {:message "server is running..."}})

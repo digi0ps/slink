@@ -9,6 +9,7 @@
                  [ring/ring-jetty-adapter "1.6.3"]
                  [ring/ring-devel "1.6.3"]
                  [ring/ring-defaults "0.3.2"]
+                 [ring/ring-json "0.5.0"]
                  [metosin/reitit-ring "0.4.2"]]
   :main slink.core
   :min-lein-version "2.5.3"
