@@ -1,4 +1,7 @@
 {
- :host "localhost"
- :port [5555 :int]
+ :host     "localhost"
+ :port     [5555 :int]
+ :database {:port [5432 :int]
+            :user "digi0ps"
+            :db   "slink_dev"}
  }

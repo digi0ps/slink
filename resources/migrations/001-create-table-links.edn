@@ -1,0 +1,4 @@
+{:up   "CREATE TABLE IF NOT EXISTS links (hash VARCHAR(20) NOT NULL,
+                                          url  VARCHAR(500) NOT NULL,
+                                          user INT NOT NULL,);"
+ :down "DROP TABLE IF EXISTS links;"}
