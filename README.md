@@ -1,5 +1,5 @@
 # slink
-
+![Clojure CI](https://github.com/digi0ps/slink/workflows/Clojure%20CI/badge.svg)
 A Clojure library designed to ... well, that part is up to you.
 
 ## Usage
