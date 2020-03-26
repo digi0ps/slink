@@ -1,0 +1,4 @@
+{
+ :up   ["ALTER TABLE links ADD PRIMARY KEY (hash);"]
+ :down ["ALTER TABLE links DROP CONSTRAINT links_pkey"]
+ }

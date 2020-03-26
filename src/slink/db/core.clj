@@ -13,6 +13,8 @@
    :user        (config :database :user)
    :password    (config :database :password)})
 
+(println "DB SPEC: " db-spec)
+
 (def ^:private setup-db (delay (do
                        (println "Configuring database")
                        (db/set-default-db-connection! db-spec)
