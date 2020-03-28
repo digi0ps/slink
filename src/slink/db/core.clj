@@ -16,17 +16,17 @@
 
 (println "DB SPEC: " db-spec)
 
-(def ^:private setup-db (delay (fn []
-                                 (println "Configuring database")
-                                 (db/set-default-db-connection! db-spec)
-                                 (db/set-default-automatically-convert-dashes-and-underscores! true)
-                                 (models/set-root-namespace! 'slink.db.models))))
+(def setup-db (delay (do
+                       (println "Configuring database")
+                       (db/set-default-db-connection! db-spec)
+                       (db/set-default-automatically-convert-dashes-and-underscores! true)
+                       (models/set-root-namespace! 'slink.db.models))))
 @setup-db
 
 (defn insert-link [hash url user-id]
   (db/insert! 'Links {:hash    hash
-                     :url     url
-                     :user-id user-id}))
+                      :url     url
+                      :user-id user-id}))
 
 (defn fetch-all-links-for-user [user-id]
   (db/select 'Links :user-id user-id))

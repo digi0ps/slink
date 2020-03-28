@@ -4,4 +4,6 @@
 
 (def router
   (ring/router
-    ["/" {:get hello-handler}]))
+    [["/" {:get hello-handler}]
+     ["/api"
+      ["/links" {:get user-links-handler}]]]))

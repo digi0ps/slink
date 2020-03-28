@@ -17,13 +17,13 @@
         (is (= expected-body (:body response))))))
 
   (testing "when there are no links for the user, "
-    (let [request {:params {:user-id 12345}}
+    (let [request {:params {:user "12345"}}
           expected-response {:status 200 :body {:success true :data []}}]
       (with-redefs [db/fetch-all-links-for-user (constantly [])]
         (is (= expected-response (user-links-handler request))))))
 
   (testing "when there are links for the user, "
-    (let [request {:params {:user-id 12345}}
+    (let [request {:params {:user "12345"}}
           time (t/now)
           expected-body {:success true :data [{:hash    "abc" :url "google.com"
                                                :user-id 12345 :created-at (c/to-epoch time)}]}]

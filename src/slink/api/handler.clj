@@ -14,8 +14,10 @@
     (assoc link :created-at epoch)))
 
 (defn user-links-handler [request]
-  (if-let [user-id (get-in request [:params :user-id])]
-    (let [all-links (db/fetch-all-links-for-user user-id)
+  (println request)
+  (if-let [user-id-query (get-in request [:params :user])]
+    (let [user-id (Integer/parseInt user-id-query)
+          all-links (db/fetch-all-links-for-user user-id)
           epoch-links (map transform-link all-links)]
       (res/success epoch-links))
     (res/error 404 "User ID parameter is required.")))
