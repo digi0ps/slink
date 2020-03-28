@@ -19,12 +19,12 @@
   (->
     router
     (ring/ring-handler default-handler)
+    (mw/wrap-exceptions)
     (print-middleware)
     (wrap-defaults site-defaults)
     (wrap-json-params)
     (wrap-json-response)
-    (mw/wrap-content-type-json)
-    (print-middleware)))
+    (mw/wrap-content-type-json)))
 
 (defn -main []
   (println (format "Running server at %s:%s" (config :host) (config :port)))

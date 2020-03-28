@@ -10,11 +10,18 @@
   (testing "when user-id is not passed"
     (let [request {:params {}}
           response (user-links-handler request)
-          expected-body {:success false :error "User ID parameter is required."}]
+          expected-body {:success false :error "User parameter is required."}]
       (testing "status should be 404"
         (is (= 404 (:status response))))
       (testing "body should be contain error"
         (is (= expected-body (:body response))))))
+
+  (testing "when user-id is not an integer, should throw exception"
+    (let [request {:params {:user "sdfadsf"}}]
+      (try
+        (user-links-handler request)
+        (catch Exception e
+          (is (= "User parameter must be an integer." (.getMessage e)))))))
 
   (testing "when there are no links for the user, "
     (let [request {:params {:user "12345"}}

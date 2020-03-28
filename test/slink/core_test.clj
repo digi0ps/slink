@@ -32,9 +32,21 @@
       (let [request {:request-method :get :uri "/api/links"}
             response (app-handler request)
             expected-body (json {:success false
-                                 :error "User ID parameter is required."})]
+                                 :error "User parameter is required."})]
         (testing "status should be 404"
           (is (= 404 (:status response))))
+        (testing "body should be expected"
+          (is (= expected-body (:body response))))))
+
+    (testing "when user-id is not a string"
+      (let [request {:request-method :get
+                     :uri "/api/links"
+                     :query-string "user=sdfsdf"}
+            response (app-handler request)
+            expected-body (json {:success false
+                                 :error "User parameter must be an integer."})]
+        (testing "status should be 500"
+          (is (= 500 (:status response))))
         (testing "body should be expected"
           (is (= expected-body (:body response))))))
 

@@ -1,4 +1,5 @@
-(ns slink.api.middlewares)
+(ns slink.api.middlewares
+  (:require [slink.helpers.response :as res]))
 
 (defn wrap-content-type-json [handler]
   (fn [request]
@@ -6,3 +7,11 @@
           headers (:headers response)
           modified-headers (assoc headers "Content-Type" "application/json; charset=utf-8")]
       (assoc response :headers modified-headers))))
+
+
+(defn wrap-exceptions [handler]
+  (fn [request]
+    (try
+      (handler request)
+      (catch Exception e
+        (res/error 500 (.getMessage e))))))
