@@ -6,4 +6,7 @@
             :user     "digi0ps"
             :db       "slink_dev"
             :password "pass1234"}
+ :hash {
+        :length [6 :int]
+        }
  }

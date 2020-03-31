@@ -17,7 +17,9 @@
                  ; Migrations + Database
                  [org.postgresql/postgresql "42.2.5"]
                  [ragtime "0.8.0"]
-                 [toucan "1.15.1"]]
+                 [toucan "1.15.1"]
+                 ; Hashing
+                 [digest "1.4.9"]]
   :main slink.core
   :min-lein-version "2.5.3"
   :uberjar-name "slink.jar"

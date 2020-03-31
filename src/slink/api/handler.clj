@@ -1,7 +1,9 @@
 (ns slink.api.handler
   (:require [slink.db.core :as db]
             [slink.helpers.response :as res]
-            [clj-time.coerce :as c]))
+            [clj-time.coerce :as c]
+            [slink.config :refer [config]]
+            [digest :as digest]))
 
 (defn hello-handler [request]
   {:status 200
@@ -24,3 +26,26 @@
       (catch NumberFormatException e
         (throw (Exception. "User parameter must be an integer."))))
     (res/error 404 "User parameter is required.")))
+
+
+(defn generate-hash [url]
+  (-> url
+      (digest/md5)
+      (subs 0 (config :hash :length))))
+
+(defn- generate-slink [{:keys [scheme headers]} hash]
+  (format "%s://%s/%s"
+          scheme
+          (headers "host")
+          hash))
+
+(defn create-link-handler [{:keys [params] :as request}]
+  (cond
+    (nil? (:user params)) (res/error 404 "User parameter is required.")
+    (nil? (:url params)) (res/error 404 "URL parameter is required.")
+    :else (do
+            (let [{:keys [user url]} params
+                  url-hash (generate-hash url)
+                  slink (generate-slink request url-hash)]
+              (db/insert-link url-hash url user)
+              (res/success {:slink slink})))))
