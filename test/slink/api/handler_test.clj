@@ -1,6 +1,7 @@
 (ns slink.api.handler-test
   (:require [clojure.test :refer :all])
   (:require [slink.api.handler :refer :all]
+            [slink.helpers.hashing :as hashing]
             [clj-time.core]
             [slink.db.core :as db]
             [clj-time.core :as t]
@@ -69,7 +70,7 @@
                    :scheme "http"}
           test-hash "12ab34"
           expected-data {:slink "http://localhost:3000/12ab34"}]
-      (with-redefs [generate-hash (constantly test-hash)
+      (with-redefs [hashing/generate-hash (constantly test-hash)
                     db/insert-link (constantly nil)]
         (let [response (create-link-handler request)]
           (testing "status should be 200"
