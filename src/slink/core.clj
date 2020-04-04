@@ -26,7 +26,7 @@
     (mw/wrap-content-type-json)))
 
 (defn -main []
-  (let [{:keys [host port threads]} (config :server)]
+  (let [{:keys [host port threads]} (config)]
     (log/infof "Running server at %s:%s" host port)
     (jetty/run-jetty app-handler {:port                 port
                                   :min-threads          threads
