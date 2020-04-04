@@ -26,6 +26,10 @@
     (mw/wrap-content-type-json)))
 
 (defn -main []
-  (println (format "Running server at %s:%s" (config :host) (config :port)))
-  (jetty/run-jetty app-handler {:port  (config :port)
-                                :join? false}))
+  (let [{:keys [host port threads]} (config :server)]
+    (log/infof "Running server at %s:%s" host port)
+    (jetty/run-jetty app-handler {:port                 port
+                                  :min-threads          threads
+                                  :max-threads          threads
+                                  :join?                false
+                                  :send-server-version? false})))

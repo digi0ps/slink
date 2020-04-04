@@ -1,12 +1,15 @@
 {
- :host     "localhost"
- :port     [5555 :int]
+ :server   {
+            :host    "localhost"
+            :port    [5555 :int]
+            :threads [4 :int]}
+
  :database {:host     "localhost"
             :port     [5432 :int]
             :user     "digi0ps"
             :db       "slink_dev"
             :password "pass1234"}
- :hash {
-        :length [6 :int]
-        }
+
+ :hash     {
+            :length [6 :int]}
  }
