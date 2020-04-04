@@ -15,14 +15,17 @@
 
 (use-fixtures :once db-fixture)
 
-(defn- json [obj]
+(defn- to-json [obj]
   (j/write-str obj))
+
+(defn from-json [obj]
+  (j/read-str obj :key-fn keyword))
 
 (deftest app-handler-test
   (testing "testing / flow"
     (let [request (mock/request :get "/")
           response (app-handler request)
-          expected (json {:message "server is running..."})]
+          expected (to-json {:message "server is running..."})]
       (is 200 (:status response))
       (println (type expected) (type (:body response)))
       (is (= expected (:body response)))
@@ -32,8 +35,8 @@
     (testing "when user-id is not provided"
       (let [request (mock/request :get "/api/links")
             response (app-handler request)
-            expected-body (json {:success false
-                                 :error   "User parameter is required."})]
+            expected-body (to-json {:success false
+                                    :error   "User parameter is required."})]
         (testing "status should be 404"
           (is (= 404 (:status response))))
         (testing "body should be expected"
@@ -43,8 +46,8 @@
       (let [request (-> (mock/request :get "/api/links")
                         (mock/query-string {:user "sdfadf"}))
             response (app-handler request)
-            expected-body (json {:success false
-                                 :error   "User parameter must be an integer."})]
+            expected-body (to-json {:success false
+                                    :error   "User parameter must be an integer."})]
         (testing "status should be 500"
           (is (= 500 (:status response))))
         (testing "body should be expected"
@@ -54,8 +57,8 @@
       (let [request (-> (mock/request :get "/api/links")
                         (mock/query-string {:user 12234543}))
             response (app-handler request)
-            expected-body (json {:success true
-                                 :data    []})]
+            expected-body (to-json {:success true
+                                    :data    []})]
         (testing "status should be 404"
           (is (= 200 (:status response))))
         (testing "body should be expected"
@@ -89,4 +92,17 @@
             (testing "received link must contain correct details"
               (let [slink (first (:data body-2))]
                 (is (= "https://web.site" (:url slink)))
-                (is (= 1234567 (:user-id slink)))))))))))
+                (is (= 1234567 (:user-id slink)))))))))
+
+    (testing "when the url is not a website link, should say URL is not valid"
+      (db/clear-all!)
+      (let [request (-> (mock/request :put "http://localhost:5000/api/links")
+                        (mock/json-body {:user 1234567 :url "adfadfasxdf"}))
+            response (app-handler request)
+            expected-body (to-json {:success false
+                                       :error   "URL is not valid."})]
+        (testing "status must be 404"
+          (is (= 404 (:status response))))
+
+        (testing "body must be expected"
+          (is (= expected-body (:body response))))))))

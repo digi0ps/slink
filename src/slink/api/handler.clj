@@ -3,6 +3,7 @@
             [slink.helpers.response :as res]
             [clj-time.coerce :as c]
             [slink.config :refer [config]]
+            [slink.helpers.regex :refer :all]
             [slink.helpers.hashing :refer :all]))
 
 (defn hello-handler [request]
@@ -34,12 +35,13 @@
           hash))
 
 (defn create-link-handler [{:keys [params] :as request}]
-  (cond
-    (nil? (:user params)) (res/error 404 "User parameter is required.")
-    (nil? (:url params)) (res/error 404 "URL parameter is required.")
-    :else (do
-            (let [{:keys [user url]} params
-                  url-hash (generate-hash user url)
-                  slink (generate-slink request url-hash)]
-              (db/insert-link url-hash url user)
-              (res/success {:slink slink})))))
+  (let [{:keys [user url]} params]
+    (cond
+      (nil? user) (res/error 404 "User parameter is required.")
+      (nil? url) (res/error 404 "URL parameter is required.")
+      (not (is-valid-url? url)) (res/error 404 "URL is not valid.")
+      :else (do
+              (let [url-hash (generate-hash user url)
+                    slink (generate-slink request url-hash)]
+                (db/insert-link url-hash url user)
+                (res/success {:slink slink}))))))
