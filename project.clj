@@ -13,6 +13,7 @@
                  [ring/ring-devel "1.6.3"]
                  [ring/ring-defaults "0.3.2"]
                  [ring/ring-json "0.5.0"]
+                 [ring/ring-mock "0.4.0"]
                  [metosin/reitit-ring "0.4.2"]
                  ; Migrations + Database
                  [org.postgresql/postgresql "42.2.5"]

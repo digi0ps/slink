@@ -29,7 +29,7 @@
 
 (defn- generate-slink [{:keys [scheme headers]} hash]
   (format "%s://%s/%s"
-          scheme
+          (name scheme)
           (headers "host")
           hash))
 

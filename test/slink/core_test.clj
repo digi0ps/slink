@@ -3,6 +3,7 @@
             [slink.core :refer :all]
             [slink.db.core :as db]
             [toucan.util.test :refer :all]
+            [ring.mock.request :as mock]
             [clojure.data.json :as j]))
 
 
@@ -19,7 +20,7 @@
 
 (deftest app-handler-test
   (testing "testing / flow"
-    (let [request {:request-method :get :uri "/"}
+    (let [request (mock/request :get "/")
           response (app-handler request)
           expected (json {:message "server is running..."})]
       (is 200 (:status response))
@@ -29,7 +30,7 @@
 
   (testing "testing sad cases for links flow"
     (testing "when user-id is not provided"
-      (let [request {:request-method :get :uri "/api/links"}
+      (let [request (mock/request :get "/api/links")
             response (app-handler request)
             expected-body (json {:success false
                                  :error   "User parameter is required."})]
@@ -39,9 +40,8 @@
           (is (= expected-body (:body response))))))
 
     (testing "when user-id is not a string"
-      (let [request {:request-method :get
-                     :uri            "/api/links"
-                     :query-string   "user=sdfsdf"}
+      (let [request (-> (mock/request :get "/api/links")
+                        (mock/query-string {:user "sdfadf"}))
             response (app-handler request)
             expected-body (json {:success false
                                  :error   "User parameter must be an integer."})]
@@ -51,9 +51,8 @@
           (is (= expected-body (:body response))))))
 
     (testing "when no links exist for the user"
-      (let [request {:request-method :get
-                     :uri            "/api/links"
-                     :query-string   "user=12234543"}
+      (let [request (-> (mock/request :get "/api/links")
+                        (mock/query-string {:user 12234543}))
             response (app-handler request)
             expected-body (json {:success true
                                  :data    []})]
@@ -65,13 +64,8 @@
   (testing "creating a link flow"
     (testing "happy flow"
       (db/clear-all!)
-      (let [request {:params         {:user 1234567
-                                      :url  "https://google.com/big"}
-                     :headers        {"content-type" "application/json"
-                                      "host"         "localhost:5000"}
-                     :request-method :put
-                     :scheme         "http"
-                     :uri            "/api/links"}
+      (let [request (-> (mock/request :put "http://localhost:5000/api/links")
+                        (mock/json-body {:user 1234567 :url "https://web.site"}))
             response (app-handler request)
             body (j/read-str (:body response) :key-fn keyword)
             regex #"http:\/\/localhost:5000\/[a-zA-Z0-9]{6}"]
@@ -79,6 +73,7 @@
           (is (= 200 (:status response)))
           (is (= true (:success body))))
         (testing "slink should match regex"
+          (println "DATA" (:data body))
           (is (not (nil? (re-matches regex (:slink (:data body)))))))
         (testing "/links should return this link for the user"
           (let [request-2 {:request-method :get
@@ -93,5 +88,5 @@
               (is (= 1 (count (:data body-2)))))
             (testing "received link must contain correct details"
               (let [slink (first (:data body-2))]
-                (is (= "https://google.com/big" (:url slink)))
+                (is (= "https://web.site" (:url slink)))
                 (is (= 1234567 (:user-id slink)))))))))))
