@@ -1,7 +1,8 @@
 (ns slink.db.core
   (:require [toucan.db :as db]
-            [toucan.models :refer [defmodel]]
-            [slink.config :refer [config]]))
+            [toucan.models :as models]
+            [slink.config :refer [config]]
+            [clj-time.coerce :as c]))
 
 (defn- get-subname [] (let [{:keys [host port db]} (config :database)]
                         (format "//%s:%s/%s" host port db)))
@@ -15,20 +16,23 @@
 
 (println "DB SPEC: " db-spec)
 
-(def ^:private setup-db (delay (do
+(def setup-db (delay (do
                        (println "Configuring database")
                        (db/set-default-db-connection! db-spec)
-                       (db/set-default-automatically-convert-dashes-and-underscores! true))))
+                       (db/set-default-automatically-convert-dashes-and-underscores! true)
+                       (models/set-root-namespace! 'slink.db.models))))
 @setup-db
 
-; Models
-(defmodel Links :links)
-
-
 (defn insert-link [hash url user-id]
-  (db/insert! Links {:hash hash
-                     :url url
-                     :user-id user-id}))
+  (db/insert! 'Links {:hash    hash
+                      :url     url
+                      :user-id user-id}))
 
 (defn fetch-all-links-for-user [user-id]
-  (db/select Links :user-id user-id))
+  (db/select 'Links :user-id user-id))
+
+(defn fetch-link-by-hash [hash]
+  (db/select-one 'Links :hash hash))
+
+(defn clear-all! []
+  (db/simple-delete! 'Links))

@@ -5,22 +5,31 @@
             [ring.adapter.jetty :as jetty]
             [ring.middleware.defaults :refer :all]
             [ring.middleware.json :refer [wrap-json-response wrap-json-params]]
-            [reitit.ring :as ring])
+            [reitit.ring :as ring]
+            [clojure.tools.logging :as log]
+            [slink.helpers.response :as res])
   (:gen-class))
 
 
-(def default-handler (constantly {:status 404 :body ""}))
-
+(defn print-middleware [handler] (fn [req]
+                                   (println "LOG: " req)
+                                   (handler req)))
 (def app-handler
   (->
     router
-    (ring/ring-handler default-handler)
-    (wrap-defaults site-defaults)
+    (ring/ring-handler res/not-found)
+    (mw/wrap-exceptions)
+    (print-middleware)
+    (wrap-defaults (assoc-in site-defaults [:security :anti-forgery] false))
     (wrap-json-params)
     (wrap-json-response)
     (mw/wrap-content-type-json)))
 
 (defn -main []
-  (println (format "Running server at %s:%s" (config :host) (config :port)))
-  (jetty/run-jetty app-handler {:port  (config :port)
-                                :join? false}))
+  (let [{:keys [host port threads]} (config :server)]
+    (log/infof "Running server at %s:%s" host port)
+    (jetty/run-jetty app-handler {:port                 port
+                                  :min-threads          threads
+                                  :max-threads          threads
+                                  :join?                false
+                                  :send-server-version? false})))

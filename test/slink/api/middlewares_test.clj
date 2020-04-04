@@ -30,3 +30,20 @@
                             :headers {"Content-Type" "application/json; charset=utf-8"}}
           response (mw-attached-handler request)]
       (is (= expected-response response)))))
+
+(deftest wrap-exceptions-test
+  (testing "when handler returns successfully, should return the response"
+    (let [handler (constantly {:success true})
+          mw-attached-handler (mw/wrap-exceptions handler)
+          response (mw-attached-handler {})]
+      (is (= {:success true} response))))
+
+  (testing "when handler throws an error,"
+    (let [handler (fn [_] (throw (Exception. "Dummy Error")))
+          mw-attached-handler (mw/wrap-exceptions handler)
+          response (mw-attached-handler {})]
+      (testing "status should be 500"
+        (is (= 500 (:status response))))
+      (testing "body should contain the error"
+        (is (= false (:success (:body response))))
+        (is (= "Dummy Error" (:error (:body response))))))))
