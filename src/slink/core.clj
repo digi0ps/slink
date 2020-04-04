@@ -21,10 +21,11 @@
     (ring/ring-handler default-handler)
     (mw/wrap-exceptions)
     (print-middleware)
-    (wrap-defaults site-defaults)
+    (wrap-defaults (assoc-in site-defaults [:security :anti-forgery] false))
     (wrap-json-params)
     (wrap-json-response)
-    (mw/wrap-content-type-json)))
+    (mw/wrap-content-type-json)
+    (print-middleware)))
 
 (defn -main []
   (println (format "Running server at %s:%s" (config :host) (config :port)))

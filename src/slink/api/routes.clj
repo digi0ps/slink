@@ -6,4 +6,5 @@
   (ring/router
     [["/" {:get hello-handler}]
      ["/api"
-      ["/links" {:get user-links-handler}]]]))
+      ["/links" {:get user-links-handler
+                 :put create-link-handler}]]]))

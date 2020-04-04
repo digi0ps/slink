@@ -30,3 +30,6 @@
 
 (defn fetch-all-links-for-user [user-id]
   (db/select 'Links :user-id user-id))
+
+(defn clear-all! []
+  (db/simple-delete! 'Links))
