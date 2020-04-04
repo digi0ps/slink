@@ -1,6 +1,7 @@
 (ns slink.api.handler
   (:require [slink.db.core :as db]
             [slink.helpers.response :as res]
+            [ring.util.response :refer [redirect]]
             [clj-time.coerce :as c]
             [slink.config :refer [config]]
             [slink.helpers.regex :refer :all]
@@ -45,3 +46,10 @@
                     slink (generate-slink request url-hash)]
                 (db/insert-link url-hash url user)
                 (res/success {:slink slink}))))))
+
+
+(defn redirect-link-handler [request]
+  (let [hash (get-in request [:path-params :hash])]
+    (if-let [link (db/fetch-link-by-hash hash)]
+      (redirect (:url link))
+      (res/not-found))))

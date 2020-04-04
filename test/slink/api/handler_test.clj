@@ -66,17 +66,17 @@
 
   (testing "when url is not valid"
     (let [request {:params {:url "dfadsfadfda" :user 12345}}
-            response (create-link-handler request)
-            expected-body {:success false :error "URL is not valid."}]
-        (testing "status should be 404"
-          (is (= 404 (:status response))))
-        (testing "body should be contain error"
-          (is (= expected-body (:body response))))))
+          response (create-link-handler request)
+          expected-body {:success false :error "URL is not valid."}]
+      (testing "status should be 404"
+        (is (= 404 (:status response))))
+      (testing "body should be contain error"
+        (is (= expected-body (:body response))))))
 
   (testing "should return url hash when message is success"
-    (let [request {:params {:url "https://google.com" :user "12345"}
+    (let [request {:params  {:url "https://google.com" :user "12345"}
                    :headers {"host" "localhost:3000"}
-                   :scheme "http"}
+                   :scheme  "http"}
           test-hash "12ab34"
           expected-data {:slink "http://localhost:3000/12ab34"}]
       (with-redefs [hashing/generate-hash (constantly test-hash)
@@ -87,3 +87,21 @@
           (testing "body should be expected"
             (is (= true (:success (:body response))))
             (is (= expected-data (:data (:body response))))))))))
+
+(deftest redirect-link-handler-test
+  (testing "should redirect when link is found"
+    (let [request {:path-params {:hash "ab123c"}}
+          expected {:status  302
+                    :headers {"Location" "https://google.com"}
+                    :body    ""}]
+      (with-redefs [db/fetch-link-by-hash (constantly
+                                            {:hash    "ab123c" :url "https://google.com"
+                                             :user-id 12345 :created-at (t/now)})]
+        (is (= expected (redirect-link-handler request))))))
+
+  (testing "should send 404 when link is not found"
+    (let [request {:path-params {:hash "ab123c"}}
+          expected {:status  404
+                    :body    ""}]
+      (with-redefs [db/fetch-link-by-hash (constantly nil)]
+        (is (= expected (redirect-link-handler request)))))))

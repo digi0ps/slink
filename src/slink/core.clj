@@ -6,11 +6,10 @@
             [ring.middleware.defaults :refer :all]
             [ring.middleware.json :refer [wrap-json-response wrap-json-params]]
             [reitit.ring :as ring]
-            [clojure.tools.logging :as log])
+            [clojure.tools.logging :as log]
+            [slink.helpers.response :as res])
   (:gen-class))
 
-
-(def default-handler (constantly {:status 404 :body ""}))
 
 (defn print-middleware [handler] (fn [req]
                                    (println "PRINT: " req)
@@ -18,7 +17,7 @@
 (def app-handler
   (->
     router
-    (ring/ring-handler default-handler)
+    (ring/ring-handler res/not-found)
     (mw/wrap-exceptions)
     (print-middleware)
     (wrap-defaults (assoc-in site-defaults [:security :anti-forgery] false))
