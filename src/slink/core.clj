@@ -12,7 +12,7 @@
 
 
 (defn print-middleware [handler] (fn [req]
-                                   (println "PRINT: " req)
+                                   (println "LOG: " req)
                                    (handler req)))
 (def app-handler
   (->
@@ -23,8 +23,7 @@
     (wrap-defaults (assoc-in site-defaults [:security :anti-forgery] false))
     (wrap-json-params)
     (wrap-json-response)
-    (mw/wrap-content-type-json)
-    (print-middleware)))
+    (mw/wrap-content-type-json)))
 
 (defn -main []
   (println (format "Running server at %s:%s" (config :host) (config :port)))

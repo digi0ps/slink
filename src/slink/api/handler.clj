@@ -50,6 +50,7 @@
 
 (defn redirect-link-handler [request]
   (let [hash (get-in request [:path-params :hash])]
+    (println "HERE" hash)
     (if-let [link (db/fetch-link-by-hash hash)]
       (redirect (:url link))
       (res/not-found))))

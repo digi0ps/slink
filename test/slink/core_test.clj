@@ -105,4 +105,28 @@
           (is (= 404 (:status response))))
 
         (testing "body must be expected"
-          (is (= expected-body (:body response))))))))
+          (is (= expected-body (:body response)))))))
+
+  (testing "redirect flow"
+    (db/clear-all!)
+    (testing "happy flow"
+      (let [req (-> (mock/request :put "/api/links")
+                    (mock/json-body {:user 1234567 :url "https://google.com"}))
+            res (app-handler req)
+            slink (get-in (from-json (:body res)) [:data :slink])]
+        (testing "link should be created"
+          (is (= 200 (:status res)))
+          (is (not (nil? slink))))
+        (let [request (mock/request :get slink)
+              response (app-handler request)]
+          (testing "it should be a redirect"
+            (is (= 302 (:status response)))
+            (is (= "https://google.com" ((:headers response) "Location")))))))
+
+    (testing "sad flow"
+      (db/clear-all!)
+      (let [request (mock/request :get "/noeafds")
+              response (app-handler request)]
+          (testing "it should be a 404"
+            (is (= 404 (:status response)))
+            (is (= "" (:body response))))))))
