@@ -7,12 +7,17 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      DATABASE_HOST: localhost
-      DATABASE_DB: ci_test
-      DATABASE_USER: github_ci
+      DATABASE_DATABASE_NAME: ci_test
+      DATABASE_USERNAME: github_ci
       DATABASE_PASSWORD: password
 
     services:
+      redis:
+        image: redis:latest
+        ports: 
+          - 6379:6379
+        options: --entrypoint redis-server
+
       postgres:
         image: postgres:10.8
         env:
@@ -30,8 +35,10 @@ jobs:
     - name: Rollback and Migrate DB
       run: lein rollback && lein migrate
       env:
-        DATABASE_PORT: ${{ job.services.postgres.ports[5432] }}
+        DATABASE_PORT_NUMBER: ${{ job.services.postgres.ports[5432] }}
+        REDIS_PORT: ${{ job.services.redis.ports[6379] }}
     - name: Run tests
       run: lein test
       env:
-        DATABASE_PORT: ${{ job.services.postgres.ports[5432] }}
+        DATABASE_PORT_NUMBER: ${{ job.services.postgres.ports[5432] }}
+        REDIS_PORT: ${{ job.services.redis.ports[6379] }}

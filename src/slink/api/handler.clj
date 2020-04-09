@@ -4,8 +4,10 @@
             [ring.util.response :refer [redirect]]
             [clj-time.coerce :as c]
             [slink.config :refer [config]]
+            [slink.db.redis :as rh]
             [slink.helpers.regex :refer :all]
-            [slink.helpers.hashing :refer :all]))
+            [slink.helpers.hashing :refer :all]
+            [slink.domain.transaction :as transaction]))
 
 (defn hello-handler [request]
   {:status 200
@@ -45,12 +47,12 @@
               (let [url-hash (generate-hash user url)
                     slink (generate-slink request url-hash)]
                 (db/insert-link url-hash url user)
+                (rh/save-hash-with-url url-hash url)
                 (res/success {:slink slink}))))))
 
 
 (defn redirect-link-handler [request]
   (let [hash (get-in request [:path-params :hash])]
-    (println "HERE" hash)
-    (if-let [link (db/fetch-link-by-hash hash)]
-      (redirect (:url link))
+    (if-let [link (transaction/get-url-for-hash hash)]
+      (redirect link)
       (res/not-found))))

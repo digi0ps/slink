@@ -5,9 +5,13 @@
             [ragtime.strategy :as strategy]))
 
 (defn get-jdbc-uri []
-  (let [{:keys [host port db user password]} (config :database)]
+  (let [{:keys [server-name
+                port-number
+                database-name
+                username
+                password]} (config :database)]
     (format "jdbc:postgresql://%s:%s/%s?user=%s&password=%s"
-            host port db user password)))
+            server-name port-number database-name username password)))
 
 (defn load-config []
   {:datastore  (jdbc/sql-database {:connection-uri (get-jdbc-uri)})

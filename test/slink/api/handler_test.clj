@@ -5,7 +5,8 @@
             [clj-time.core]
             [slink.db.core :as db]
             [clj-time.core :as t]
-            [clj-time.coerce :as c]))
+            [clj-time.coerce :as c]
+            [slink.domain.transaction :as transaction]))
 
 (deftest user-links-handler-test
   (testing "when user-id is not passed"
@@ -94,14 +95,12 @@
           expected {:status  302
                     :headers {"Location" "https://google.com"}
                     :body    ""}]
-      (with-redefs [db/fetch-link-by-hash (constantly
-                                            {:hash    "ab123c" :url "https://google.com"
-                                             :user-id 12345 :created-at (t/now)})]
+      (with-redefs [transaction/get-url-for-hash (constantly "https://google.com")]
         (is (= expected (redirect-link-handler request))))))
 
   (testing "should send 404 when link is not found"
     (let [request {:path-params {:hash "ab123c"}}
           expected {:status  404
                     :body    ""}]
-      (with-redefs [db/fetch-link-by-hash (constantly nil)]
+      (with-redefs [transaction/get-url-for-hash (constantly nil)]
         (is (= expected (redirect-link-handler request)))))))

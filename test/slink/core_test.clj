@@ -4,13 +4,17 @@
             [slink.db.core :as db]
             [toucan.util.test :refer :all]
             [ring.mock.request :as mock]
-            [clojure.data.json :as j]))
+            [clojure.data.json :as j]
+            [slink.db.redis :as redis]))
 
 
 (defn db-fixture [f]
   (println "Setting up database...")
-  @db/setup-db
+  (db/start-conn-pool)
+  (redis/start-conn-pool)
   (f)
+  (db/stop-conn-pool)
+  (redis/stop-conn-pool)
   (println "Tearing down..."))
 
 (use-fixtures :once db-fixture)
