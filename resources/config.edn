@@ -3,15 +3,25 @@
  :port     [5555 :int]
  :threads  [4 :int]
 
- :database {:host     "localhost"
-            :port     [5432 :int]
-            :user     "digi0ps"
-            :db       "slink_dev"
-            :password "pass1234"}
+ :database {:server-name        "localhost"
+            :port-number        [5432 :int]
+            :username           "digi0ps"
+            :database-name      "slink_dev"
+            :password           "pass1234"
+            :connection-timeout 2000
+            :validation-timeout 1000
+            :idle-timeout       60000
+            :max-lifetime       1800000
+            :minimum-idle       2
+            :maximum-pool-size  5
+            :pool-name          "db-pool"
+            :adapter            "postgresql"}
 
  :redis    {
-            :host "localhost"
-            :port [6379 :int]
+            :host              "localhost"
+            :port              [6379 :int]
+            :min-idle-per-key  [2 :int]
+            :max-total-per-key [5 :int]
             }
 
  :hash     {

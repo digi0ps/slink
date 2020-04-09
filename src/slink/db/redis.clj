@@ -1,9 +1,25 @@
 (ns slink.db.redis
-           (:require [taoensso.carmine :as redis :refer (wcar)]
-                     [slink.config :refer [config]]))
+  (:require [taoensso.carmine :as redis :refer (wcar)]
+            [taoensso.carmine.connections :refer [conn-pool]]
+            [slink.config :refer [config]])
+  (:import (java.io Closeable)))
+
+
+(def redis-conn-pool (delay
+                       (conn-pool :mem/fresh (->
+                                               :redis
+                                               config
+                                               (select-keys [:min-idle-per-key
+                                                             :max-total-per-key])))))
+
+(defn start-conn-pool []
+  @redis-conn-pool)
+
+(defn stop-conn-pool []
+  (.close ^Closeable @redis-conn-pool))
 
 (def get-redis-config
-  {:pool {}
+  {:pool @redis-conn-pool
    :spec (-> :redis
              config
              (select-keys [:host :port]))})

@@ -7,7 +7,9 @@
             [ring.middleware.json :refer [wrap-json-response wrap-json-params]]
             [reitit.ring :as ring]
             [clojure.tools.logging :as log]
-            [slink.helpers.response :as res])
+            [slink.helpers.response :as res]
+            [slink.db.redis :as redis]
+            [slink.db.core :as db])
   (:gen-class))
 
 
@@ -25,11 +27,21 @@
     (wrap-json-response)
     (mw/wrap-content-type-json)))
 
+(defn- start-conns []
+  (redis/start-conn-pool)
+  (db/start-conn-pool))
+
+(defn- stop-conns []
+  (redis/stop-conn-pool)
+  (db/stop-conn-pool))
+
 (defn -main []
   (let [{:keys [host port threads]} (config)]
     (log/infof "Running server at %s:%s" host port)
+    (start-conns)
     (jetty/run-jetty app-handler {:port                 port
                                   :min-threads          threads
                                   :max-threads          threads
                                   :join?                false
-                                  :send-server-version? false})))
+                                  :send-server-version? false})
+    (stop-conns)))
