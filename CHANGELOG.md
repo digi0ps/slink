@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## 0.4.1 - 2020-04-09
+### Added
+- Use Redis to cache hash->url.
+### Modified
+- Postgres connection to use connection pooling.
+
 ## 0.4.0 - 2020-04-04
 ### Added
 - Added create link endpoint.
