@@ -1,4 +1,5 @@
 {
+ :env      "dev"
  :host     "localhost"
  :port     [5555 :int]
  :threads  [4 :int]
@@ -24,9 +25,9 @@
             :max-total-per-key [5 :int]
             }
 
- :slack {
-         :request-webhook ""
-         }
+ :slack    {
+            :request-webhook ""
+            }
 
  :hash     {
             :length [6 :int]}

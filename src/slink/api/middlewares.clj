@@ -1,6 +1,7 @@
 (ns slink.api.middlewares
   (:require [slink.helpers.response :as res]
-            [slink.domain.slack :as slack]))
+            [slink.domain.slack :as slack]
+            [slink.config :refer [config]]))
 
 (defn wrap-content-type-json [handler]
   (fn [request]
@@ -20,5 +21,6 @@
     (try
       (handler request)
       (catch Exception e
-        (slack/report-request-error request e)
+        (when (= "prod" (config :env))
+          (slack/report-request-error request e))
         (res/error 500 "Server error has occured.")))))

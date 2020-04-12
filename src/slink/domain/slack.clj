@@ -28,4 +28,4 @@
                  :fields   [(get-payload-field "Error" err-msg false)
                             (get-payload-field "IP Address" remote-addr)
                             (get-payload-field "Requested URL" url)]}]
-    (post-slack-request-webhook payload)))
+    (future (post-slack-request-webhook payload))))

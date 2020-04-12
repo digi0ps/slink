@@ -1,6 +1,8 @@
 (ns slink.api.middlewares-test
   (:require [clojure.test :refer :all])
-  (:require [slink.api.middlewares :as mw]))
+  (:require [slink.api.middlewares :as mw]
+            [slink.config :refer [config]]
+            [slink.domain.slack :as slack]))
 
 (deftest wrap-content-type-json-test
   (testing "should attach content type header when not present"
@@ -48,11 +50,33 @@
       (is (= {:success true} response))))
 
   (testing "when handler throws an error,"
-    (let [handler (fn [_] (throw (Exception. "Dummy Error")))
-          mw-attached-handler (mw/wrap-exceptions handler)
-          response (mw-attached-handler {})]
-      (testing "status should be 500"
-        (is (= 500 (:status response))))
-      (testing "body should say server error"
-        (is (= false (:success (:body response))))
-        (is (= "Server error has occured." (:error (:body response))))))))
+    (testing "response should be "
+      (let [handler (fn [_] (throw (Exception. "Dummy Error")))
+            mw-attached-handler (mw/wrap-exceptions handler)
+            response (mw-attached-handler {})]
+        (testing "status should be 500"
+          (is (= 500 (:status response))))
+        (testing "body should say server error"
+          (is (= false (:success (:body response))))
+          (is (= "Server error has occured." (:error (:body response)))))))
+
+    (testing "should not report to slack if env is dev"
+      (let [handler (fn [_] (throw (Exception. "Dummy Error")))
+            mw-attached-handler (mw/wrap-exceptions handler)
+            is-slack-called? (atom false)]
+        (with-redefs [config (constantly "test")
+                      slack/report-request-error (fn [_ _]
+                                                   (reset! is-slack-called? true))]
+          (mw-attached-handler {})
+          (is (= @is-slack-called? false)))))
+
+    (testing "should report to slack if env is prod"
+      (let [handler (fn [_] (throw (Exception. "Dummy Error")))
+            mw-attached-handler (mw/wrap-exceptions handler)
+            is-slack-called? (atom false)]
+        (with-redefs [config (constantly "prod")
+                      slack/report-request-error (fn [_ e]
+                                                   (is (= (.getMessage e) "Dummy Error"))
+                                                   (reset! is-slack-called? true))]
+          (mw-attached-handler {})
+          (is (= @is-slack-called? true)))))))
