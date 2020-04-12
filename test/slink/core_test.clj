@@ -52,8 +52,8 @@
             response (app-handler request)
             expected-body (to-json {:success false
                                     :error   "User parameter must be an integer."})]
-        (testing "status should be 500"
-          (is (= 500 (:status response))))
+        (testing "status should be 404"
+          (is (= 404 (:status response))))
         (testing "body should be expected"
           (is (= expected-body (:body response))))))
 
