@@ -22,9 +22,18 @@
           response (mw-attached-handler request)]
       (is (= expected-response response))))
 
-  (testing "should overwrite Content-Type  header"
+  (testing "should not overwrite Content-Type  header"
     (let [mw-attached-handler (mw/wrap-content-type-json identity)
           request {:method "get" :params {} :headers {"Content-Type" "text/plain"}}
+          expected-response {:method "get"
+                            :params {}
+                            :headers {"Content-Type" "text/plain"}}
+          response (mw-attached-handler request)]
+      (is (= expected-response response))))
+
+  (testing "should overwrite if content-type is octet-stream"
+    (let [mw-attached-handler (mw/wrap-content-type-json identity)
+          request {:method "get" :params {} :headers {"Content-Type" "application/octet-stream"}}
           expected-response {:method "get"
                             :params {}
                             :headers {"Content-Type" "application/json; charset=utf-8"}}

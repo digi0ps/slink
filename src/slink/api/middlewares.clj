@@ -6,6 +6,7 @@
     (let [response (handler request)
           headers (:headers response)]
       (if (and
+            headers
             (headers "Content-Type")
             (not (= (headers "Content-Type") "application/octet-stream")))
         response

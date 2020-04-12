@@ -8,7 +8,8 @@
 
 (def router
   (ring/router
-    [["/" {:get hello-handler}
+    [["/"
+      ["" {:get hello-handler}]
       ["swagger.json" {:no-doc      true
                        :swagger     {:info     {:title "Slink API"}
                                      :basePath ""}
