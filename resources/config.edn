@@ -23,6 +23,7 @@
             :port              [6379 :int]
             :min-idle-per-key  [2 :int]
             :max-total-per-key [5 :int]
+            :uri               ""
             }
 
  :slack    {

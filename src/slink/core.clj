@@ -46,5 +46,4 @@
                                   :min-threads          threads
                                   :max-threads          threads
                                   :join?                false
-                                  :send-server-version? false})
-    (stop-conns)))
+                                  :send-server-version? false})))

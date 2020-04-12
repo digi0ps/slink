@@ -21,6 +21,7 @@
     (try
       (handler request)
       (catch Exception e
+        (println "EXCEPTION: " (.getMessage e))
         (when (= "prod" (config :env))
           (slack/report-request-error request e))
         (res/error 500 "Server error has occured.")))))
