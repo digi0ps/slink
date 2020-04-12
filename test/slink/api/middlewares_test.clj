@@ -53,6 +53,6 @@
           response (mw-attached-handler {})]
       (testing "status should be 500"
         (is (= 500 (:status response))))
-      (testing "body should contain the error"
+      (testing "body should say server error"
         (is (= false (:success (:body response))))
-        (is (= "Dummy Error" (:error (:body response))))))))
+        (is (= "Server error has occured." (:error (:body response))))))))

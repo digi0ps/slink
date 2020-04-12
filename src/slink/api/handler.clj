@@ -28,7 +28,7 @@
             epoch-links (map transform-link all-links)]
         (res/success epoch-links))
       (catch NumberFormatException e
-        (throw (Exception. "User parameter must be an integer."))))
+        (res/error 404 "User parameter must be an integer.")))
     (res/error 404 "User parameter is required.")))
 
 (defn- generate-slink [{:keys [scheme headers]} hash]

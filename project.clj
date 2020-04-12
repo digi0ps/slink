@@ -8,6 +8,7 @@
                  ; Config
                  [clonfig "0.2.0"]
                  ; HTTP + Routing
+                 [clj-http "3.10.0"]
                  [ring/ring-core "1.6.3"]
                  [ring/ring-jetty-adapter "1.6.3"]
                  [ring/ring-devel "1.6.3"]

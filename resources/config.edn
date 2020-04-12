@@ -24,6 +24,10 @@
             :max-total-per-key [5 :int]
             }
 
+ :slack {
+         :request-webhook ""
+         }
+
  :hash     {
             :length [6 :int]}
  }
