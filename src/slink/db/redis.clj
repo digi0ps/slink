@@ -18,11 +18,15 @@
 (defn stop-conn-pool []
   (.close ^Closeable @redis-conn-pool))
 
+(defn- get-redis-spec []
+  (let [redis-config (config :redis)]
+    (if (:uri redis-config)
+      (select-keys redis-config [:uri])
+      (select-keys redis-config [:host :port :password :db]))))
+
 (def get-redis-config
   {:pool @redis-conn-pool
-   :spec (-> :redis
-             config
-             (select-keys [:host :port]))})
+   :spec (get-redis-spec)})
 
 (defmacro with-redis [& body]
   `(redis/wcar get-redis-config ~@body))
