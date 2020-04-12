@@ -38,7 +38,7 @@
     ::success
     (catch Exception e
       (println "REDIS ERROR while setting ->" hash url)
-      ::failure)))
+      nil)))
 
 (defn fetch-url-from-redis [hash]
   (try
@@ -46,4 +46,4 @@
       (redis/get hash))
     (catch Exception e
       (println "REDIS ERROR while fetching ->" hash)
-      ::failure)))
+      nil)))
