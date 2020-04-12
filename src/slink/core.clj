@@ -6,6 +6,7 @@
             [ring.middleware.defaults :refer :all]
             [ring.middleware.json :refer [wrap-json-response wrap-json-params]]
             [reitit.ring :as ring]
+            [ring.middleware.reload :refer [wrap-reload]]
             [clojure.tools.logging :as log]
             [slink.helpers.response :as res]
             [slink.db.redis :as redis]
@@ -34,6 +35,8 @@
 (defn- stop-conns []
   (redis/stop-conn-pool)
   (db/stop-conn-pool))
+
+(def reloadable-handler (wrap-reload #'app-handler))
 
 (defn -main []
   (let [{:keys [host port threads]} (config)]
