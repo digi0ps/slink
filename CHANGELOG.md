@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## 0.5.0 - 2020-04-12
+### Added
+- Swagger docs at `/swaggers/docs`.
+- Any server error gets posted on Slack.
+### Modified
+- Redis to use heroku configuration.
+
 ## 0.4.1 - 2020-04-09
 ### Added
 - Use Redis to cache hash->url.
