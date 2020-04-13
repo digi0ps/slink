@@ -4,6 +4,8 @@
  :port     [5555 :int]
  :threads  [4 :int]
 
+ :cors {:domains ["*"]}
+
  :database {:server-name        "localhost"
             :port-number        [5432 :int]
             :username           "digi0ps"

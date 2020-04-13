@@ -11,7 +11,7 @@
                      (edn/read-string)))
 
 (defn get-config []
-  (println "reading from file")
+  (println "CONFIG: " (clonfig/read-config config-file))
   (clonfig/read-config config-file))
 
 (def config-state (delay (get-config)))

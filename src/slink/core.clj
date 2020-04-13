@@ -21,6 +21,7 @@
   (->
     router
     (ring/ring-handler res/not-found)
+    (mw/wrap-cors)
     (mw/wrap-exceptions)
     (print-middleware)
     (wrap-defaults (assoc-in site-defaults [:security :anti-forgery] false))

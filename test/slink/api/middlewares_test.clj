@@ -8,37 +8,37 @@
   (testing "should attach content type header when not present"
     (let [mw-attached-handler (mw/wrap-content-type-json identity)
           request {:method "get" :params {}}
-          expected-response {:method "get"
-                            :params {}
-                            :headers {"Content-Type" "application/json; charset=utf-8"}}
+          expected-response {:method  "get"
+                             :params  {}
+                             :headers {"Content-Type" "application/json; charset=utf-8"}}
           response (mw-attached-handler request)]
       (is (= expected-response response))))
 
   (testing "should not affect other headers"
     (let [mw-attached-handler (mw/wrap-content-type-json identity)
           request {:method "get" :params {} :headers {"Token" "random"}}
-          expected-response {:method "get"
-                            :params {}
-                            :headers {"Token" "random"
-                                      "Content-Type" "application/json; charset=utf-8"}}
+          expected-response {:method  "get"
+                             :params  {}
+                             :headers {"Token"        "random"
+                                       "Content-Type" "application/json; charset=utf-8"}}
           response (mw-attached-handler request)]
       (is (= expected-response response))))
 
   (testing "should not overwrite Content-Type  header"
     (let [mw-attached-handler (mw/wrap-content-type-json identity)
           request {:method "get" :params {} :headers {"Content-Type" "text/plain"}}
-          expected-response {:method "get"
-                            :params {}
-                            :headers {"Content-Type" "text/plain"}}
+          expected-response {:method  "get"
+                             :params  {}
+                             :headers {"Content-Type" "text/plain"}}
           response (mw-attached-handler request)]
       (is (= expected-response response))))
 
   (testing "should overwrite if content-type is octet-stream"
     (let [mw-attached-handler (mw/wrap-content-type-json identity)
           request {:method "get" :params {} :headers {"Content-Type" "application/octet-stream"}}
-          expected-response {:method "get"
-                            :params {}
-                            :headers {"Content-Type" "application/json; charset=utf-8"}}
+          expected-response {:method  "get"
+                             :params  {}
+                             :headers {"Content-Type" "application/json; charset=utf-8"}}
           response (mw-attached-handler request)]
       (is (= expected-response response)))))
 
@@ -80,3 +80,27 @@
                                                    (reset! is-slack-called? true))]
           (mw-attached-handler {})
           (is (= @is-slack-called? true)))))))
+
+(deftest wrap-cors-test
+  (testing "should return allow origin for *"
+    (let [mw-attached-handler (mw/wrap-cors identity)]
+      (with-redefs [config (constantly ["*"])]
+        (let [response (mw-attached-handler {})
+              headers (:headers response)]
+          (is (= "*" (headers "Access-Control-Allow-Origin")))))))
+
+  (testing "should return allow origin for multiple dowmains"
+    (let [mw-attached-handler (mw/wrap-cors identity)]
+      (with-redefs [config (constantly ["localhost" "slink.com"])]
+        (let [response (mw-attached-handler {})
+              headers (:headers response)]
+          (is (= "localhost,slink.com" (headers "Access-Control-Allow-Origin")))))))
+
+  (testing "should return allow-methods + allow-headers along with allow origin for options request"
+    (let [mw-attached-handler (mw/wrap-cors identity)]
+      (with-redefs [config (constantly ["*"])]
+        (let [response (mw-attached-handler {:request-method :options})
+              headers (:headers response)]
+          (is (= "*" (headers "Access-Control-Allow-Origin")))
+          (is (= "OPTIONS, GET, PUT" (headers "Access-Control-Allow-Methods")))
+          (is (= "Content-Type" (headers "Access-Control-Allow-Headers"))))))))
