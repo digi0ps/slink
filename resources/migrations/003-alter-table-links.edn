@@ -1,0 +1,8 @@
+{
+ :up   ["ALTER TABLE links
+              ALTER COLUMN user_id TYPE BIGINT,
+              ADD COLUMN IF NOT EXISTS description TEXT DEFAULT '';"]
+ :down ["ALTER TABLE links
+              ALTER COLUMN user_id TYPE INT,
+              DROP COLUMN IF EXISTS description;"]
+ }
