@@ -74,8 +74,17 @@
       (testing "body should be contain error"
         (is (= expected-body (:body response))))))
 
+  (testing "when user is not int"
+    (let [request {:params {:url "https://www.google.com" :user "12345"}}
+          response (create-link-handler request)
+          expected-body {:success false :error "User parameter must be an integer."}]
+      (testing "status should be 404"
+        (is (= 404 (:status response))))
+      (testing "body should be contain error"
+        (is (= expected-body (:body response))))))
+
   (testing "should return url hash when message is success"
-    (let [request {:params  {:url "https://google.com" :user "12345"}
+    (let [request {:params  {:url "https://google.com" :user 12345}
                    :headers {"host" "localhost:3000"}
                    :scheme  "http"}
           test-hash "12ab34"

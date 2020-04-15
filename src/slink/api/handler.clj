@@ -42,6 +42,7 @@
     (cond
       (nil? user) (res/error 404 "User parameter is required.")
       (nil? url) (res/error 404 "URL parameter is required.")
+      (not (int? user)) (res/error 404 "User parameter must be an integer.")
       (not (is-valid-url? url)) (res/error 404 "URL is not valid.")
       :else (do
               (let [url-hash (generate-hash user url)
