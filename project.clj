@@ -7,6 +7,8 @@
                  [org.clojure/data.json "1.0.0"]
                  ; Config
                  [clonfig "0.2.0"]
+                 ; Logging
+                 [com.taoensso/timbre "4.10.0"]
                  ; HTTP + Routing
                  [clj-http "3.10.0"]
                  [ring/ring-core "1.6.3"]

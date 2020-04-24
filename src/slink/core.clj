@@ -7,7 +7,7 @@
             [ring.middleware.json :refer [wrap-json-response wrap-json-params]]
             [reitit.ring :as ring]
             [ring.middleware.reload :refer [wrap-reload]]
-            [clojure.tools.logging :as log]
+            [taoensso.timbre :as logger]
             [slink.helpers.response :as res]
             [slink.db.redis :as redis]
             [slink.db.core :as db])
@@ -15,7 +15,7 @@
 
 
 (defn print-middleware [handler] (fn [req]
-                                   (println "LOG: " req)
+                                   (logger/debug "REQUEST: " req)
                                    (handler req)))
 (def app-handler
   (->
@@ -31,7 +31,10 @@
 
 (defn- start-conns []
   (redis/start-conn-pool)
-  (db/start-conn-pool))
+  (db/start-conn-pool)
+  (logger/merge-config! {:timestamp-opts
+                         {:timezone
+                          (java.util.TimeZone/getTimeZone "Asia/Kolkata")}}))
 
 (defn- stop-conns []
   (redis/stop-conn-pool)
@@ -41,8 +44,8 @@
 
 (defn -main []
   (let [{:keys [host port threads]} (config)]
-    (log/infof "Running server at %s:%s" host port)
     (start-conns)
+    (logger/infof "Running server at %s:%s" host port)
     (jetty/run-jetty app-handler {:port                 port
                                   :min-threads          threads
                                   :max-threads          threads
