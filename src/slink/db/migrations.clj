@@ -2,7 +2,7 @@
   (:require [ragtime.jdbc :as jdbc]
             [ragtime.repl :as repl]
             [slink.config :refer [config]]
-            [ragtime.strategy :as strategy]))
+            [taoensso.timbre :as logger]))
 
 (defn get-jdbc-uri []
   (let [{:keys [server-name
@@ -25,7 +25,7 @@
 
 (defn migrate []
   (repl/migrate (load-config))
-  (println "Ran all migrations"))
+  (logger/info "Ran all migrations"))
 
 (defn rollback []
   (repl/rollback (load-config)))

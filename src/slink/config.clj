@@ -1,7 +1,8 @@
 (ns slink.config
   (:require [clonfig.core :as clonfig]
             [clojure.java.io :as io]
-            [clojure.edn :as edn]))
+            [clojure.edn :as edn]
+            [taoensso.timbre :as logger]))
 
 (def ^:private ^:const config-file-name "config.edn")
 
@@ -11,7 +12,7 @@
                      (edn/read-string)))
 
 (defn get-config []
-  (println "CONFIG: " (clonfig/read-config config-file))
+  (logger/info "CONFIG: " (clonfig/read-config config-file))
   (clonfig/read-config config-file))
 
 (def config-state (delay (get-config)))

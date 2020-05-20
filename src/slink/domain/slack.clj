@@ -2,7 +2,6 @@
   (:require [slink.config :refer [config]]
             [clj-http.client :as http]))
 
-
 (defn- get-payload-field
   ([title value short]
    {:title title

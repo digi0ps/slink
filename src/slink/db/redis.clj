@@ -1,7 +1,8 @@
 (ns slink.db.redis
   (:require [taoensso.carmine :as redis :refer (wcar)]
             [taoensso.carmine.connections :refer [conn-pool]]
-            [slink.config :refer [config]])
+            [slink.config :refer [config]]
+            [taoensso.timbre :as logger])
   (:import (java.io Closeable)))
 
 
@@ -41,7 +42,7 @@
       (redis/set hash url))
     ::success
     (catch Exception e
-      (println "REDIS ERROR while setting ->" hash url)
+      (logger/error "REDIS ERROR while setting ->" hash url)
       nil)))
 
 (defn fetch-url-from-redis [hash]
@@ -49,5 +50,5 @@
     (with-redis
       (redis/get hash))
     (catch Exception e
-      (println "REDIS ERROR while fetching ->" hash)
+      (logger/error "REDIS ERROR while fetching ->" hash)
       nil)))
